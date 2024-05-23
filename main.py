@@ -101,13 +101,7 @@ def find_cafe():
     cafe_locations = db.session.execute(db.select(Cafe).where(Cafe.location == location)).scalars().all()
 
     if len(cafe_locations) == 0:
-        error ={
-            "error": {
-                "Not Found": "Sorry, we don't have a cafe at that location."
-            }
-        }
-
-        return jsonify(error)
+        return jsonify(error={"Not Found": "Sorry, we don't have a cafe at that location."})
 
     for cafe in cafe_locations:
         cafe_obj = {
@@ -132,7 +126,25 @@ def find_cafe():
     return jsonify(all_cafes)
 
 # HTTP POST - Create Record
+@app.route("/add", methods=['POST'])
+def add_cafe():
+    new_cafe = Cafe(
+        name = request.form['name'],
+        map_url = request.form['map_url'],
+        img_url = request.form['img_url'],
+        location = request.form['location'],
+        seats = request.form['seats'],
+        has_toilet = bool(request.form['has_toilet']),
+        has_wifi = bool(request.form['has_wifi']),
+        has_sockets = bool(request.form['has_sockets']),
+        can_take_calls = bool(request.form['can_take_calls']),
+        coffee_price = request.form['coffee_price']
+    )
 
+    db.session.add(new_cafe)
+    db.session.commit()
+
+    return jsonify(response={"success": "Successfully added the new cafe."})
 # HTTP PUT/PATCH - Update Record
 
 # HTTP DELETE - Delete Record
