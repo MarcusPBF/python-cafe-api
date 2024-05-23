@@ -33,11 +33,27 @@ class Cafe(db.Model):
 with app.app_context():
     db.create_all()
 
+def create_cafe_object(obj):
+    cafe =  {
+        "id": obj.id, 
+        "name": obj.name, 
+        "image_url": obj.img_url,
+        "location": obj.location, 
+        "map_url": obj.map_url,
+        "seats": obj.seats,
+        "coffee_price": obj.coffee_price,
+        "can_take_calls": obj.can_take_calls,
+        "has_sockets": obj.has_sockets,
+        "has_toliets": obj.has_toilet,
+        "has_wifi": obj.has_wifi
+    }
+
+    return cafe
+
 
 @app.route("/")
 def home():
     return render_template("index.html")
-
 
 # HTTP GET - Read Record
 @app.route("/random")
@@ -47,23 +63,7 @@ def random_cafe():
 
     random_cafe = db.get_or_404(Cafe, random_id)
 
-    cafe = {
-        "cafe": {
-            "id": random_cafe.id, 
-            "name": random_cafe.name, 
-            "image_url": random_cafe.img_url,
-            "location": random_cafe.location, 
-            "map_url": random_cafe.map_url,
-            "seats": random_cafe.seats,
-            "coffee_price": random_cafe.coffee_price,
-            "can_take_calls": random_cafe.can_take_calls,
-            "has_sockets": random_cafe.has_sockets,
-            "has_toliets": random_cafe.has_toilet,
-            "has_wifi": random_cafe.has_wifi
-        }
-    }
-
-    return jsonify(cafe)
+    return jsonify(cafe=create_cafe_object(random_cafe))
 
 # HTTP GET - Read all Cafes
 @app.route("/all")
@@ -72,26 +72,9 @@ def cafes():
     list_of_cafes = db.session.execute(db.select(Cafe)).scalars().all()
 
     for cafe in list_of_cafes:
-        cafe_obj = {
-            "id": cafe.id, 
-            "name": cafe.name, 
-            "image_url": cafe.img_url,
-            "location": cafe.location, 
-            "map_url": cafe.map_url,
-            "seats": cafe.seats,
-            "coffee_price": cafe.coffee_price,
-            "can_take_calls": cafe.can_take_calls,
-            "has_sockets": cafe.has_sockets,
-            "has_toliets": cafe.has_toilet,
-            "has_wifi": cafe.has_wifi
-        }
-        cafe_arr.append(cafe_obj)
+        cafe_arr.append(create_cafe_object(cafe))
 
-    all_cafes = {
-        "cafes": cafe_arr
-    }
-
-    return jsonify(all_cafes)
+    return jsonify(cafes=cafe_arr)
 
 # HTTP GET - Find a location 
 @app.route('/search')
@@ -104,26 +87,9 @@ def find_cafe():
         return jsonify(error={"Not Found": "Sorry, we don't have a cafe at that location."})
 
     for cafe in cafe_locations:
-        cafe_obj = {
-            "id": cafe.id, 
-            "name": cafe.name, 
-            "image_url": cafe.img_url,
-            "location": cafe.location, 
-            "map_url": cafe.map_url,
-            "seats": cafe.seats,
-            "coffee_price": cafe.coffee_price,
-            "can_take_calls": cafe.can_take_calls,
-            "has_sockets": cafe.has_sockets,
-            "has_toliets": cafe.has_toilet,
-            "has_wifi": cafe.has_wifi
-        }
-        cafe_arr.append(cafe_obj)
+        cafe_arr.append(create_cafe_object(cafe))
 
-    all_cafes = {
-        "cafes": cafe_arr
-    }
-
-    return jsonify(all_cafes)
+    return jsonify(cafes=cafe_arr)
 
 # HTTP POST - Create Record
 @app.route("/add", methods=['POST'])
