@@ -98,9 +98,9 @@ def cafes():
 def find_cafe():
     location = request.args['loc']
     cafe_arr = []
-    cafe_locations = db.session.execute(db.select(Cafe).where(Cafe.location == location)).scalars()
+    cafe_locations = db.session.execute(db.select(Cafe).where(Cafe.location == location)).scalars().all()
 
-    if len(cafe_locations.all()) == 0:
+    if len(cafe_locations) == 0:
         error ={
             "error": {
                 "Not Found": "Sorry, we don't have a cafe at that location."
