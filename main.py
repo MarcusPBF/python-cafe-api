@@ -145,7 +145,18 @@ def add_cafe():
     db.session.commit()
 
     return jsonify(response={"success": "Successfully added the new cafe."})
+
 # HTTP PUT/PATCH - Update Record
+@app.route('/update-price/<int:cafe_id>', methods=['PATCH'])
+def update_price(cafe_id):
+    try:
+        cafe = db.get_or_404(Cafe, cafe_id) 
+        cafe.coffee_price = request.form['new_price']
+        db.session.commit()
+    except:
+        return jsonify(error={"Not Found": "Sorry, a cafe with that id was not found in the database."}), 404
+
+    return jsonify(success="Successfully updated the price.")
 
 # HTTP DELETE - Delete Record
 
